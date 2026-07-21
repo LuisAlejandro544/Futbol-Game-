@@ -1,0 +1,77 @@
+name: Android Unit Tests
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+    paths:
+      - 'app/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - '.github/workflows/unit-tests.yml'
+  pull_request:
+    branches: [ "main", "master", "develop" ]
+    paths:
+      - 'app/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - '.github/workflows/unit-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  unit-tests:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run Unit Tests
+        id: run_tests
+        run: |
+          if [ -f "./gradlew" ]; then
+            chmod +x ./gradlew
+            ./gradlew :app:testDebugUnitTest
+          else
+            gradle :app:testDebugUnitTest
+          fi
+
+      - name: Send Success Notification to Discord
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_UNIT_TESTS_WEBHOOK_URL }}
+        run: |
+          if [ -n "$DISCORD_WEBHOOK" ]; then
+            curl -H "Content-Type: application/json" \
+              -d "{\"username\": \"Fafi Unit Tests Guard\", \"avatar_url\": \"https://raw.githubusercontent.com/takahirom/roborazzi/main/assets/roborazzi_logo.png\", \"content\": \"✅ **¡PRUEBAS UNITARIAS CORRECTAS!**\\n\\nLa suite de pruebas automatizadas ha pasado con **100% de éxito** en la rama \`${{ github.ref_name }}\`.\\n\\n* **Commit:** \`${{ github.sha }}\`\\n* **Autor:** ${{ github.actor }}\\n* **Acción:** [Ver Ejecución](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"}" \
+              "$DISCORD_WEBHOOK"
+          else
+            echo "⚠️ DISCORD_UNIT_TESTS_WEBHOOK_URL no configurado."
+          fi
+
+      - name: Send Failure Notification to Discord
+        if: failure()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_UNIT_TESTS_WEBHOOK_URL }}
+        run: |
+          if [ -n "$DISCORD_WEBHOOK" ]; then
+            curl -H "Content-Type: application/json" \
+              -d "{\"username\": \"Fafi Unit Tests Guard\", \"avatar_url\": \"https://raw.githubusercontent.com/takahirom/roborazzi/main/assets/roborazzi_logo.png\", \"content\": \"🚨 **¡FALLO EN PRUEBAS UNITARIAS!**\\n\\nLa ejecución de pruebas ha **fallado** en la rama \`${{ github.ref_name }}\`. Revisa los logs inmediatamente para corregir regresiones.\\n\\n* **Commit:** \`${{ github.sha }}\`\\n* **Autor:** ${{ github.actor }}\\n* **Acción:** [Ver Logs de Error](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"}" \
+              "$DISCORD_WEBHOOK"
+          else
+            echo "⚠️ DISCORD_UNIT_TESTS_WEBHOOK_URL no configurado."
+          fi

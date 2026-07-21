@@ -1,0 +1,6 @@
+{
+  "name": "FEDEBOL Manager",
+  "description": "Simulador de gestión de fútbol procedural con confederaciones realistas ficticias (SUDAMBOL, EUROBOL) y convocatoria a selección nacional.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

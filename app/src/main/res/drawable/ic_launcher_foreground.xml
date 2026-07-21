@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Outer gold glow/ring -->
+    <path
+        android:strokeColor="#F59E0B"
+        android:strokeWidth="2"
+        android:pathData="M54,54m-28,0a28,28 0 1,0 56,0a28,28 0 1,0 -56,0" />
+        
+    <!-- Main Soccer Ball Outer Shape -->
+    <path
+        android:fillColor="#F8FAFC"
+        android:strokeColor="#0B1329"
+        android:strokeWidth="1.5"
+        android:pathData="M54,54m-24,0a24,24 0 1,0 48,0a24,24 0 1,0 -48,0" />
+        
+    <!-- Soccer ball pentagons and lines -->
+    <!-- Center pentagon -->
+    <path
+        android:fillColor="#0B1329"
+        android:pathData="M54,46 L61,51 L58,59 L50,59 L47,51 Z" />
+        
+    <!-- Lines radiating from pentagon vertices -->
+    <path
+        android:strokeColor="#0B1329"
+        android:strokeWidth="1.5"
+        android:pathData="M54,46 L54,34" />
+    <path
+        android:strokeColor="#0B1329"
+        android:strokeWidth="1.5"
+        android:pathData="M61,51 L72,55" />
+    <path
+        android:strokeColor="#0B1329"
+        android:strokeWidth="1.5"
+        android:pathData="M58,59 L65,69" />
+    <path
+        android:strokeColor="#0B1329"
+        android:strokeWidth="1.5"
+        android:pathData="M50,59 L43,69" />
+    <path
+        android:strokeColor="#0B1329"
+        android:strokeWidth="1.5"
+        android:pathData="M47,51 L36,55" />
+        
+    <!-- Outer panels -->
+    <path
+        android:fillColor="#0B1329"
+        android:pathData="M54,30 L48,31 L44,34 L54,34 Z" />
+    <path
+        android:fillColor="#0B1329"
+        android:pathData="M54,30 L60,31 L64,34 L54,34 Z" />
+    <path
+        android:fillColor="#0B1329"
+        android:pathData="M76,46 L72,55 L78,57 Z" />
+    <path
+        android:fillColor="#0B1329"
+        android:pathData="M65,69 L69,76 L62,77 Z" />
+    <path
+        android:fillColor="#0B1329"
+        android:pathData="M43,69 L39,76 L46,77 Z" />
+    <path
+        android:fillColor="#0B1329"
+        android:pathData="M32,46 L36,55 L30,57 Z" />
+</vector>

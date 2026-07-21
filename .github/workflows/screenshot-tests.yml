@@ -1,0 +1,89 @@
+name: Android Screenshot & App Store Generator
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+    paths:
+      - 'app/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - '.github/workflows/screenshot-tests.yml'
+  pull_request:
+    branches: [ "main", "master", "develop" ]
+    paths:
+      - 'app/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - '.github/workflows/screenshot-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  screenshots:
+    name: Generate & Verify Screenshots
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          # Automatically uses build-cache and handles dependency caching
+          cache-read-only: false
+
+      - name: Generate Reference & Store Screenshots (Roborazzi Record)
+        run: |
+          if [ -f "./gradlew" ]; then
+            chmod +x ./gradlew
+            ./gradlew :app:recordRoborazziDebug
+          else
+            gradle :app:recordRoborazziDebug
+          fi
+
+      - name: Upload Screenshots to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_SCREENSHOT_TESTS_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK" ]; then
+            echo "=============================================================================================="
+            echo "⚠️ AVISO: La variable secreta DISCORD_SCREENSHOT_TESTS_WEBHOOK_URL no está configurada."
+            echo "Por favor agrégala en los secretos de GitHub para transmitir imágenes en vivo a tu Discord."
+            echo "=============================================================================================="
+          else
+            echo "Transmitiendo capturas de pantalla de la app a Discord..."
+            
+            # Buscamos las capturas generadas y construimos la carga multipart de curl
+            SQUAD_PATH="app/src/test/screenshots/store_squad.png"
+            FED_PATH="app/src/test/screenshots/store_federation.png"
+            GREET_PATH="app/src/test/screenshots/greeting.png"
+            
+            CURL_CMD="curl -H 'Content-Type: multipart/form-data'"
+            
+            if [ -f "$SQUAD_PATH" ]; then
+              CURL_CMD="$CURL_CMD -F 'file1=@$SQUAD_PATH'"
+            fi
+            if [ -f "$FED_PATH" ]; then
+              CURL_CMD="$CURL_CMD -F 'file2=@$FED_PATH'"
+            fi
+            if [ -f "$GREET_PATH" ]; then
+              CURL_CMD="$CURL_CMD -F 'file3=@$GREET_PATH'"
+            fi
+            
+            PAYLOAD_JSON="{\"username\": \"Fafi Visual Inspector\", \"avatar_url\": \"https://raw.githubusercontent.com/takahirom/roborazzi/main/assets/roborazzi_logo.png\", \"content\": \"📸 **¡GALERÍA DE CAPTURAS DE PANTALLA Y MARKETING GENERADA!**\\n\\nEl motor visual de **Fafi Manager** ha renderizado los gráficos de la aplicación correspondientes a la rama \`${{ github.ref_name }}\`.\\n\\nAquí tienes las capturas listas para las **Tiendas de Aplicaciones (App Stores)** o revisiones de diseño directas en este canal. 🏟️✨\\n\\n* **Commit:** \`${{ github.sha }}\`\\n* **Autor:** ${{ github.actor }}\"}"
+            
+            CURL_CMD="$CURL_CMD -F 'payload_json=$PAYLOAD_JSON' '$DISCORD_WEBHOOK'"
+            
+            eval $CURL_CMD
+          fi
