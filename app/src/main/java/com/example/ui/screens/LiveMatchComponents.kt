@@ -1,5 +1,8 @@
 package com.example.ui.screens
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import com.example.ui.components.ProceduralPlayerFace
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -385,7 +388,11 @@ fun LiveMatchPostGameRecap(
         border = BorderStroke(2.dp, CardGold),
         modifier = modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(14.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -432,18 +439,28 @@ fun LiveMatchPostGameRecap(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Column {
-                                Text(
-                                    text = winningMvp.playerName,
-                                    color = TextPrimary,
-                                    fontSize = 15.sp,
-                                    fontWeight = FontWeight.Black
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                ProceduralPlayerFace(
+                                    seedString = "${winningMvp.playerId}_${winningMvp.playerName}",
+                                    position = if (winningMvp.isGoalkeeper) com.example.model.Position.GK else com.example.model.Position.ATT,
+                                    size = 46.dp
                                 )
-                                Text(
-                                    text = "Club: ${if (winningMvp.clubId == userMatch.homeClubId) userMatch.homeClubName else userMatch.awayClubName}",
-                                    color = TextSecondary,
-                                    fontSize = 11.sp
-                                )
+                                Column {
+                                    Text(
+                                        text = winningMvp.playerName,
+                                        color = TextPrimary,
+                                        fontSize = 15.sp,
+                                        fontWeight = FontWeight.Black
+                                    )
+                                    Text(
+                                        text = "Club: ${if (winningMvp.clubId == userMatch.homeClubId) userMatch.homeClubName else userMatch.awayClubName}",
+                                        color = TextSecondary,
+                                        fontSize = 11.sp
+                                    )
+                                }
                             }
                             Box(
                                 modifier = Modifier
@@ -539,7 +556,7 @@ fun LiveMatchPostGameRecap(
                 )
 
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    myTeamStats.take(3).forEach { playerStat ->
+                    myTeamStats.take(5).forEach { playerStat ->
                         val isGK = playerStat.isGoalkeeper
                         Row(
                             modifier = Modifier
@@ -551,40 +568,50 @@ fun LiveMatchPostGameRecap(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column {
-                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    Text(
-                                        text = playerStat.playerName,
-                                        color = TextPrimary,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    if (playerStat.playerId == myMvp.playerId) {
-                                        Text("⭐", fontSize = 10.sp)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                ProceduralPlayerFace(
+                                    seedString = "${playerStat.playerId}_${playerStat.playerName}",
+                                    position = if (isGK) com.example.model.Position.GK else com.example.model.Position.MID,
+                                    size = 32.dp
+                                )
+                                Column {
+                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        Text(
+                                            text = playerStat.playerName,
+                                            color = TextPrimary,
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        if (playerStat.playerId == myMvp.playerId) {
+                                            Text("⭐", fontSize = 10.sp)
+                                        }
                                     }
-                                }
-                                Spacer(modifier = Modifier.height(2.dp))
-                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                    if (isGK) {
-                                        Text(
-                                            text = "🧤 ${playerStat.saves} ${if (playerStat.saves == 1) "Parada" else "Paradas"}",
-                                            color = GlacierBlue,
-                                            fontSize = 10.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    } else {
-                                        Text(
-                                            text = "⚽ ${playerStat.goals} G",
-                                            color = if (playerStat.goals > 0) StatusRed else TextSecondary,
-                                            fontSize = 10.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text(
-                                            text = "👟 ${playerStat.assists} A",
-                                            color = if (playerStat.assists > 0) StatusTeal else TextSecondary,
-                                            fontSize = 10.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                        if (isGK) {
+                                            Text(
+                                                text = "🧤 ${playerStat.saves} ${if (playerStat.saves == 1) "Parada" else "Paradas"}",
+                                                color = GlacierBlue,
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        } else {
+                                            Text(
+                                                text = "⚽ ${playerStat.goals} G",
+                                                color = if (playerStat.goals > 0) StatusRed else TextSecondary,
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                            Text(
+                                                text = "👟 ${playerStat.assists} A",
+                                                color = if (playerStat.assists > 0) StatusTeal else TextSecondary,
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -668,6 +695,11 @@ fun PitchPlayerCard(
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(1.dp))
+            ProceduralPlayerFace(
+                player = player,
+                size = 24.dp
+            )
             Text(
                 text = player.lastName.ifEmpty { player.firstName },
                 color = TextPrimary,

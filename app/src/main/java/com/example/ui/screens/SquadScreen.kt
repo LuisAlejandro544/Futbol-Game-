@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.example.model.Club
 import com.example.model.Player
 import com.example.model.Position
+import com.example.ui.components.ProceduralPlayerFace
 import com.example.engine.GameSettings
 import com.example.ui.theme.*
 
@@ -199,7 +200,13 @@ fun SquadScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Column(modifier = Modifier.weight(1f)) {
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                ProceduralPlayerFace(player = player, size = 32.dp)
+                                Column(modifier = Modifier.weight(1f)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     val badgeBg = when (player.position) {
                                         Position.GK -> PositionOrangeGK
@@ -243,6 +250,7 @@ fun SquadScreen(
                                     fontSize = 11.sp
                                 )
                             }
+                        }
                             
                             // Visual display of overall rating
                             Text(
@@ -281,7 +289,13 @@ fun SquadScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Column(modifier = Modifier.weight(1f)) {
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                ProceduralPlayerFace(player = player, size = 32.dp)
+                                Column(modifier = Modifier.weight(1f)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     val badgeBg = when (player.position) {
                                         Position.GK -> PositionOrangeGK
@@ -325,6 +339,7 @@ fun SquadScreen(
                                     fontSize = 11.sp
                                 )
                             }
+                        }
                             
                             // Visual display of overall rating
                             Text(
@@ -355,9 +370,10 @@ fun SquadScreen(
                     item {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
+                            ProceduralPlayerFace(player = selectedPlayer, size = 52.dp)
                             Column(modifier = Modifier.weight(1f)) {
                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                                     Text(selectedPlayer.fullName.uppercase(), color = TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.Bold)
