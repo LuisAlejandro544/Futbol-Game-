@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 sealed class DashboardTab(val title: String, val icon: ImageVector) {
     object ClubInfo : DashboardTab("Club y Tabla", Icons.Default.SportsFootball)
     object Squad : DashboardTab("Plantilla", Icons.Default.People)
+    object Transfers : DashboardTab("Mercado", Icons.Default.Storefront)
     object Calendar : DashboardTab("Calendario", Icons.Default.DateRange)
     object LiveMatch : DashboardTab("Simulador Vivo", Icons.Default.Tv)
     object Social : DashboardTab("Red Social", Icons.Default.AlternateEmail)

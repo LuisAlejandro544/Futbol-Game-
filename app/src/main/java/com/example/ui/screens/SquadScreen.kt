@@ -36,7 +36,8 @@ fun SquadScreen(
     onPlayerClick: (Player) -> Unit,
     onFormationChange: (String) -> Unit,
     onSetCaptain: (Player) -> Unit,
-    onSwapPlayers: (String, String) -> Unit
+    onSwapPlayers: (String, String) -> Unit,
+    onSellPlayer: ((Player, Long) -> Unit)? = null
 ) {
     if (club == null) return
 
@@ -74,7 +75,7 @@ fun SquadScreen(
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Black,
                     letterSpacing = 0.5.sp,
-                    modifier = Modifier.padding(bottom = 6.dp)
+                    modifier = Modifier.padding(top = 4.dp, bottom = 6.dp)
                 )
 
                 Card(
@@ -82,9 +83,9 @@ fun SquadScreen(
                     border = BorderStroke(1.dp, DarkSteel),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 12.dp)
+                        .padding(bottom = 10.dp)
                 ) {
-                    Column(modifier = Modifier.padding(8.dp)) {
+                    Column(modifier = Modifier.padding(10.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -98,7 +99,7 @@ fun SquadScreen(
                                         .clip(androidx.compose.foundation.shape.RoundedCornerShape(6.dp))
                                         .background(if (isActive) GrassEmerald else DarkSteel)
                                         .clickable { onFormationChange(form) }
-                                        .padding(vertical = 6.dp, horizontal = 2.dp),
+                                        .padding(vertical = 8.dp, horizontal = 4.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
@@ -114,7 +115,7 @@ fun SquadScreen(
                         Text(
                             text = formationDetails[club.selectedFormation] ?: "",
                             color = GlacierBlue,
-                            fontSize = 10.sp,
+                            fontSize = 10.5.sp,
                             fontWeight = FontWeight.Medium
                         )
 
@@ -122,33 +123,31 @@ fun SquadScreen(
                         Text(
                             text = "ESTILO TÁCTICO",
                             color = NeonAmber,
-                            fontSize = 10.sp,
+                            fontSize = 10.5.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         val tactics = listOf("Equilibrada", "Agresiva", "Defensiva", "Contraataque", "Posesión", "Presión Alta")
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        androidx.compose.foundation.lazy.LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            tactics.forEach { tac ->
+                            items(tactics) { tac ->
                                 val isTacActive = club.selectedTactic == tac
                                 Box(
                                     modifier = Modifier
-                                        .weight(1f)
-                                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
+                                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(6.dp))
                                         .background(if (isTacActive) NeonAmber else DarkSteel)
                                         .clickable { club.selectedTactic = tac }
-                                        .padding(vertical = 4.dp, horizontal = 1.dp),
+                                        .padding(vertical = 6.dp, horizontal = 10.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
                                         text = tac,
                                         color = if (isTacActive) Color.Black else TextPrimary,
-                                        fontSize = 8.5.sp,
+                                        fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
+                                        maxLines = 1
                                     )
                                 }
                             }
@@ -605,6 +604,26 @@ fun SquadScreen(
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold
                             )
+                        }
+
+                        if (onSellPlayer != null) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(
+                                onClick = { onSellPlayer(selectedPlayer, selectedPlayer.marketValue) },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = SurfaceCarbon,
+                                    contentColor = StatusAmber
+                                ),
+                                border = BorderStroke(1.dp, StatusAmber),
+                                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                            ) {
+                                Text(
+                                    text = "💰 VENDER AL MERCADO ($${selectedPlayer.marketValue})",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                         
                         HorizontalDivider(color = DarkSteel, modifier = Modifier.padding(vertical = 10.dp))

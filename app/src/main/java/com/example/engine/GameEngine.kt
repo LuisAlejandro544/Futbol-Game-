@@ -63,6 +63,22 @@ class GameEngine(internal val context: Context) {
     internal val _availableCoachesToHire = MutableStateFlow<List<Coach>>(emptyList())
     val availableCoachesToHire: StateFlow<List<Coach>> = _availableCoachesToHire
 
+    // Free Agents and Youth Talents State
+    internal val _freeAgentsAndTalents = MutableStateFlow<List<Player>>(emptyList())
+    val freeAgentsAndTalents: StateFlow<List<Player>> = _freeAgentsAndTalents
+
+    fun generateInitialFreeAgentsAndTalents() {
+        val initialList = mutableListOf<Player>()
+        val countries = listOf("Argentina", "Brasil", "Uruguay", "Colombia", "Chile", "México")
+        repeat(5) {
+            initialList.add(Player.generateYouthTalent(country = countries.random()))
+        }
+        repeat(5) {
+            initialList.add(Player.generateFreeAgent())
+        }
+        _freeAgentsAndTalents.value = initialList
+    }
+
     fun generateCandidateCoaches(): List<Coach> {
         val specialities = listOf("Ataque", "Defensa", "Porteros", "Físico", "Mental")
         val firstNames = listOf("Carlos", "Gastón", "Mauricio", "Jorge", "Guillermo", "Marcelo", "Hernán", "Gustavo", "Eduardo", "Claudio")
@@ -79,6 +95,7 @@ class GameEngine(internal val context: Context) {
 
     init {
         _availableCoachesToHire.value = generateCandidateCoaches()
+        generateInitialFreeAgentsAndTalents()
     }
 
     // Active Managerial Event State (Choice-based random events)
@@ -209,6 +226,20 @@ class GameEngine(internal val context: Context) {
                     }
                 }
             }
+        }
+
+        // Generate periodic Youth Talents / Free Agents in Market (65% chance per week)
+        if (Random.nextInt(100) < 65) {
+            val isYouth = Random.nextBoolean()
+            val countries = listOf("Argentina", "Brasil", "Uruguay", "Colombia", "Chile", "México")
+            val newPlayer = if (isYouth) {
+                Player.generateYouthTalent(country = countries.random())
+            } else {
+                Player.generateFreeAgent()
+            }
+            _freeAgentsAndTalents.value = _freeAgentsAndTalents.value + newPlayer
+            val tag = if (isYouth) "💎 CANTERA CONTINENTAL" else "🌟 AGENTE LIBRE DESTACADO"
+            addNews("$tag: ¡${newPlayer.fullName} (${newPlayer.position.name}, OVR: ${newPlayer.getOverallRating()}) busca club en la Agencia Libre!")
         }
 
         // Trigger random managerial event (choice-based)
@@ -451,4 +482,84 @@ class GameEngine(internal val context: Context) {
             addNews = ::addNews
         )
     }
+
+    // --- TRANSFER MARKET LOGIC ---
+
+    fun negotiateClubTransfer(player: Player, owningClub: Club, offeredFee: Long): TransferNegotiationResult {
+        val ovr = player.getOverallRating()
+        val multiplier = if (ovr >= 82) 1.25f else if (ovr >= 72) 1.10f else 1.0f
+        val minFeeExpected = (player.marketValue * multiplier).toLong()
+
+        return if (offeredFee >= minFeeExpected) {
+            TransferNegotiationResult.ClubAccepted(minSalaryDemand = player.salary)
+        } else {
+            val counterOffer = ((minFeeExpected + offeredFee) / 2 / 1000) * 1000
+            TransferNegotiationResult.ClubRejected(
+                reason = "El club ${owningClub.name} considera insuficiente la oferta de $${offeredFee}. Exigen al menos $${minFeeExpected}.",
+                minimumFeeExpected = counterOffer
+            )
+        }
+    }
+
+    fun negotiatePlayerContract(player: Player, offeredSalary: Long, offeredYears: Int, signingBonus: Long): TransferNegotiationResult {
+        val minRequiredSalary = (player.salary * 0.95f).toLong()
+        if (offeredSalary < minRequiredSalary) {
+            return TransferNegotiationResult.ContractRejected(
+                reason = "${player.fullName} y su agente exigen un salario de al menos $${player.salary}/semana.",
+                requiredSalary = player.salary
+            )
+        }
+
+        return TransferNegotiationResult.ContractAccepted(
+            message = "¡${player.fullName} ha aceptado los términos contractuales de $${offeredSalary}/semana por ${offeredYears} años!"
+        )
+    }
+
+    fun executeTransferSigning(player: Player, owningClub: Club?, transferFee: Long, agreedSalary: Long, agreedYears: Int): Boolean {
+        val userClub = _clubs.value.firstOrNull { it.id == _manager.value.currentClubId } ?: return false
+
+        if (!userClub.canAfford(transferFee, agreedSalary)) {
+            addNews("❌ FICHAJE FALLIDO: Presupuesto insuficiente en las arcas del club.")
+            return false
+        }
+
+        if (owningClub != null) {
+            owningClub.sellPlayer(player.id, transferFee)
+        } else {
+            _freeAgentsAndTalents.value = _freeAgentsAndTalents.value.filter { it.id != player.id }
+        }
+
+        userClub.signPlayer(player, transferFee, agreedSalary, agreedYears)
+        _clubs.value = _clubs.value.toList()
+
+        val sourceStr = owningClub?.name ?: "Agencia Libre / Cantera"
+        addNews("💣 BOMBAZO EN EL MERCADO: ¡${userClub.name} ha oficializado el fichaje de ${player.fullName} procedente de $sourceStr!")
+        scope.launch {
+            logToDiary("💣 FICHADO: Contratamos a ${player.fullName} (${player.position.name}, ${player.getOverallRating()} OVR) por $${transferFee} ($${agreedSalary}/sem).")
+            storage.saveClubsBatch(_clubs.value)
+        }
+        return true
+    }
+
+    fun sellPlayerFromUserSquad(player: Player, askingPrice: Long): Boolean {
+        val userClub = _clubs.value.firstOrNull { it.id == _manager.value.currentClubId } ?: return false
+        val sold = userClub.sellPlayer(player.id, askingPrice) ?: return false
+
+        _freeAgentsAndTalents.value = _freeAgentsAndTalents.value + sold
+        _clubs.value = _clubs.value.toList()
+
+        addNews("💰 TRASPASO CONFIRMADO: Vendiste a ${player.fullName} por $${askingPrice}. Fondos depositados en el presupuesto.")
+        scope.launch {
+            logToDiary("💰 VENTA: Traspasamos a ${player.fullName} por $${askingPrice}.")
+            storage.saveClubsBatch(_clubs.value)
+        }
+        return true
+    }
+}
+
+sealed class TransferNegotiationResult {
+    data class ClubAccepted(val minSalaryDemand: Long) : TransferNegotiationResult()
+    data class ClubRejected(val reason: String, val minimumFeeExpected: Long) : TransferNegotiationResult()
+    data class ContractAccepted(val message: String) : TransferNegotiationResult()
+    data class ContractRejected(val reason: String, val requiredSalary: Long) : TransferNegotiationResult()
 }

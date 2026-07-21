@@ -169,7 +169,21 @@ fun MainDashboard(
                             onPlayerClick = { selectedPlayerForDetail = it },
                             onFormationChange = { formation -> engine.updateClubFormation(formation) },
                             onSetCaptain = { player -> engine.setClubCaptain(player.id) },
-                            onSwapPlayers = { starterId, benchId -> engine.swapStarterAndSubstitute(starterId, benchId) }
+                            onSwapPlayers = { starterId, benchId -> engine.swapStarterAndSubstitute(starterId, benchId) },
+                            onSellPlayer = { player, fee ->
+                                val success = engine.sellPlayerFromUserSquad(player, fee)
+                                if (success) {
+                                    Toast.makeText(context, "¡Venta realizada! ${player.fullName} vendido por $${fee}.", Toast.LENGTH_SHORT).show()
+                                    selectedPlayerForDetail = null
+                                } else {
+                                    Toast.makeText(context, "No se pudo realizar la venta.", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        )
+                    }
+                    DashboardTab.Transfers -> {
+                        TransfersScreen(
+                            engine = engine
                         )
                     }
                     DashboardTab.Calendar -> {

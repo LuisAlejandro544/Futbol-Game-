@@ -219,19 +219,26 @@ fun PlayerTrainingResultCard(result: PlayerTrainingResult) {
             when {
                 scouting >= 80 -> {
                     // Full visibility
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        result.increments.forEach { (attr, inc) ->
-                            val label = translateAttribute(attr)
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Text("🟢", fontSize = 10.sp)
-                                Text(text = "+$inc $label", color = GrassEmerald, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                            }
+                    if (result.increments.isEmpty() && result.decrements.isEmpty()) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Text("⚡", fontSize = 11.sp)
+                            Text(text = "Mantiene un rendimiento constante y trabajo táctico estable durante la semana.", color = TextSecondary, fontSize = 11.sp)
                         }
-                        result.decrements.forEach { (attr, dec) ->
-                            val label = translateAttribute(attr)
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Text("🔴", fontSize = 10.sp)
-                                Text(text = "-$dec $label (Decline Físico)", color = StatusRed, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    } else {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            result.increments.forEach { (attr, inc) ->
+                                val label = translateAttribute(attr)
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text("🟢", fontSize = 10.sp)
+                                    Text(text = "+$inc $label", color = GrassEmerald, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                            result.decrements.forEach { (attr, dec) ->
+                                val label = translateAttribute(attr)
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text("🔴", fontSize = 10.sp)
+                                    Text(text = "-$dec $label (Decline Físico)", color = StatusRed, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                }
                             }
                         }
                     }
@@ -258,17 +265,24 @@ fun PlayerTrainingResultCard(result: PlayerTrainingResult) {
                         fuzzyDecrements.add("Evidencia fatiga o declive en su condición física general")
                     }
 
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        fuzzyIncrements.forEach { text ->
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Text("🟡", fontSize = 10.sp)
-                                Text(text = text, color = GlacierBlue, fontSize = 12.sp)
-                            }
+                    if (fuzzyIncrements.isEmpty() && fuzzyDecrements.isEmpty()) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Text("⚡", fontSize = 11.sp)
+                            Text(text = "Pone empeño en la sesión semanal manteniendo su rendimiento constante.", color = TextSecondary, fontSize = 11.sp)
                         }
-                        fuzzyDecrements.forEach { text ->
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Text("🟠", fontSize = 10.sp)
-                                Text(text = text, color = StatusAmber, fontSize = 12.sp)
+                    } else {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            fuzzyIncrements.forEach { text ->
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text("🟡", fontSize = 10.sp)
+                                    Text(text = text, color = GlacierBlue, fontSize = 12.sp)
+                                }
+                            }
+                            fuzzyDecrements.forEach { text ->
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text("🟠", fontSize = 10.sp)
+                                    Text(text = text, color = StatusAmber, fontSize = 12.sp)
+                                }
                             }
                         }
                     }

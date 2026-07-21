@@ -45,6 +45,31 @@ data class Club(
         points = 0
     }
 
+    fun canAfford(fee: Long, salary: Long): Boolean {
+        return budget >= fee && wageBudget >= salary
+    }
+
+    fun signPlayer(player: Player, fee: Long, salary: Long, contractYears: Int) {
+        budget = (budget - fee).coerceAtLeast(0L)
+        val updatedPlayer = player.copy(
+            salary = salary,
+            contractYears = contractYears,
+            isFreeAgent = false,
+            isStarter = squad.size < 11
+        )
+        squad.add(updatedPlayer)
+    }
+
+    fun sellPlayer(playerId: String, feeReceived: Long): Player? {
+        val player = squad.firstOrNull { it.id == playerId }
+        if (player != null) {
+            squad.remove(player)
+            budget += feeReceived
+            player.isFreeAgent = true
+        }
+        return player
+    }
+
     // Calculates overall defensive, midfield, and offensive ratings from squad starters
     fun getTeamRatings(): Triple<Int, Int, Int> {
         if (squad.isEmpty()) return Triple(30, 30, 30)

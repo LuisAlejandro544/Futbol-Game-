@@ -37,13 +37,15 @@ Este documento detalla la planificación estratégica, el estado actual de desar
 
 ---
 
-## 📈 FASE 2: MERCADO DE FICHAJES Y NEGOCIACIONES COMPLEJAS (EN DESARROLLO ⏳)
+## 📈 FASE 2: MERCADO DE FICHAJES, CANTERA CONTINENTAL Y NEGOCIACIONES REALISTAS (COMPLETADO ✅)
 
-*   **Algoritmo de Ofertas de la IA:** Los clubes de las ligas secundarias y principales calcularán dinámicamente sus necesidades de plantilla por posición y emitirán ofertas automatizadas por tus futbolistas estrella.
-*   **Mecánica de Puja de Contrato:**
-    *   Negociación directa de prima por firma, sueldo semanal, cláusula de rescisión, bonos por valla invicta o gol, y duración del contrato.
-    *   *Rasgos de Representante:* Los agentes tendrán personalidades (Codicioso, Conciliador, Agresivo) que alterarán la paciencia del jugador durante la puja.
-*   **Contratos de Prueba (Trial Contracts):** Opción de fichar agentes libres por un periodo corto de prueba para revelar sus estadísticas físicas y técnicas ocultas mediante el entrenamiento diario antes de firmar un contrato definitivo.
+*   **Generador Periódico de Cantera y Joyas Juveniles:** Sistema automatizado que produce promesas de 16 a 19 años con techos de potencial elevado (hasta 96 OVR), atributos en desarrollo y reconocimientos previos en torneos juveniles.
+*   **Agentes Libres con Trofeos y Palmarés:** Mercado de futbolistas sin contrato con historial de goles, asistencias y copas continentales ganadas listos para su contratación inmediata.
+*   **Negociación Bipartita Realista (Club y Jugador):**
+    *   Negociación de traspaso entre clubes con contraofertas inteligentes de la IA según el valor de mercado y rendimiento del jugador.
+    *   Negociación de contrato personal: salario por semana, años de vínculo (1-5 años) y límites presupuestarios.
+*   **Venta y Traspaso Directo de Plantilla:** Opción para que el usuario ponga en venta y traspase a cualquier futbolista de su plantilla para inyectar presupuesto a sus arcas.
+*   **Rediseño Ergonómico de Interfaz Táctica:** Botones y selectores con espaciado amplio, chips horizontales `LazyRow` para tácticas sin amontonamiento ni fuentes minúsculas, garantizando máxima tranquilidad táctica en pantallas horizontales.
 
 ---
 

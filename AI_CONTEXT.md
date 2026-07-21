@@ -37,7 +37,15 @@ El `GameEngine` actúa como la única fuente de verdad (*Single Source of Truth*
 *   `calendar.txt`: Archivo plano que almacena la fecha real en formato ISO-8601 (`YYYY-MM-DD`). Se actualiza sumando 7 días de forma asíncrona al simular cada fecha.
 *   `CryptoHelper.kt`: Codificador liviano que utiliza codificación Base64 en lugar de algoritmos AES/ECB/CBC pesados y con claves hardcodeadas. Esto elimina vulnerabilidades de criptografía débil reportadas por analizadores de seguridad estáticos (SAST) y previene falsos positivos manteniendo la integridad de las partidas guardadas de manera eficiente.
 
-### 🧭 Flujo de Inicio y Menú Principal:
+### 💣 2.1 Módulo de Mercado de Fichajes, Cantera y Negociaciones
+
+*   `freeAgentsAndTalents` (`StateFlow<List<Player>>`): Mantiene la lista activa de futbolistas libres y canteranos juveniles en el mercado continental.
+*   **Generador de Cantera y Agentes Libres:** `Player.generateYouthTalent()` y `Player.generateFreeAgent()` producen semanalmente (65% probabilidad por fecha) futbolistas de 16-19 años con alto potencial (`potentialRating` hasta 96) o agentes libres con palmarés de trofeos y goles.
+*   **Negociación Bipartita:**
+    1. `GameEngine.negotiateClubTransfer()`: Valida la oferta de traspaso contra las pretensiones del club según el OVR y valor de mercado.
+    2. `GameEngine.negotiatePlayerContract()`: Valida requerimientos salariales por semana y años de vínculo.
+    3. `GameEngine.executeTransferSigning()`: Ejecuta la firma, deduce el presupuesto del club e inyecta al jugador en la plantilla activa.
+    4. `GameEngine.sellPlayerFromUserSquad()`: Traspasa un jugador de la plantilla al mercado recibiendo su valor monetario.
 Al arrancar la aplicación, el usuario accede directamente a un **Menú Principal** de diseño profesional que centraliza las operaciones del simulador antes de inicializar o cargar el estado global:
 1.  **Nueva partida:** Inicia el flujo de onboarding solicitando el nombre del mánager y generando el universo procedural.
 2.  **Continuar partida:** Carga y reanuda inmediatamente el último estado de juego guardado en disco si existe.

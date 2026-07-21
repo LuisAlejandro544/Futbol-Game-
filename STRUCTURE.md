@@ -97,6 +97,7 @@ La estructura física de los archivos fuentes ha sido rediseñada para respetar 
         ├── ClubAndStandingsScreen.kt  # Pizarra deportiva y bitácora del universo
         ├── CoachingStaffView.kt       # Sub-vista modularizada del cuerpo técnico contratado y mercado de reclutamiento
         ├── SquadScreen.kt             # Plantilla, táctica y ojeo de futbolistas
+        ├── TransfersScreen.kt         # Mercado de fichajes, cantera continental, agentes libres y negociación
         ├── PlayerSwapDialog.kt        # Diálogo modularizado para reasignación e intercambio de futbolistas (starters/substitutes)
         ├── CalendarScreen.kt          # Calendario dinámico, filtros y fixtures locales/intls (Orquestador modular)
         ├── CalendarComponents.kt      # Layouts de tarjetas, selectores de rivales/ligas y formateadores del calendario

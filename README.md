@@ -47,6 +47,13 @@ Sigue estos sencillos pasos para compilar, ensamblar y ejecutar el proyecto de f
 
 El juego incorpora un simulador deportivo y administrativo con un control directivo sin precedentes:
 
+*   **Mercado de Fichajes, Cantera Continental y Agentes Libres:**
+    *   **Generador de Talentos y Joyas Canteranas:** Producción periódica de promesas juveniles (16 a 19 años) con alto rango de potencial (82-96 OVR), reconocimientos previos ("✨ Joya de Cantera Sub-18", "🏆 Campeón de Torneo Juvenil") y valoraciones de mercado accesibles.
+    *   **Agentes Libres con Trofeos y Goles:** Fichaje directo de futbolistas sin contrato, precedidos por palmarés destacado ("🏆 Ganador de Copa Continental", "⚽ 25 Goles en Liga Profesional").
+    *   **Sistema de Negociación Bipartita:**
+        1. **Negociación con Clubes:** Oferta de traspaso con contrapropuestas dinámicas del club vendedor en función del valor de mercado del jugador.
+        2. **Contrato Personal y Masa Salarial:** Acuerdos salariales por semana y años de contrato (1 a 5 años) gestionando el presupuesto del club.
+    *   **Venta Directa de la Plantilla:** Opción para poner en venta y traspasar jugadores de la plantilla propia al mercado de fichajes con retribución inmediata al presupuesto.
 *   **Estrategia Táctica y Estilos de Juego Flexibles:** Elige entre 5 formaciones modernas y 6 estilos tácticos (*Equilibrada, Agresiva / Ofensiva, Defensiva, Contraataque, Posesión, Presión Alta*) tanto en la plantilla como en la previa del partido:
     *   **4-4-2:** Balance estándar táctico sin modificadores.
     *   **4-3-3:** Presión ofensiva (+10% Ataque, -5% Defensa).

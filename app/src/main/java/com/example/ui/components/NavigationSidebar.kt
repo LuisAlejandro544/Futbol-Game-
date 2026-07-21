@@ -35,6 +35,7 @@ fun NavigationSidebar(
     val tabs = listOf(
         DashboardTab.ClubInfo,
         DashboardTab.Squad,
+        DashboardTab.Transfers,
         DashboardTab.Calendar,
         DashboardTab.LiveMatch,
         DashboardTab.Social,

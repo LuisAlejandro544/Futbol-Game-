@@ -46,7 +46,11 @@ data class Player(
     val weightKg: Int = 74,             // Weight in kg
     val preferredFoot: String = "Derecho", // Preferred foot ("Derecho", "Izquierdo", "Ambidestro")
     val specialty: String = "Todoterreno",  // Distinct specialty / archetype badge
-    val personality: String = "Silencioso Profesional" // Personality archetype
+    val personality: String = "Silencioso Profesional", // Personality archetype
+    var isFreeAgent: Boolean = false,
+    var isYouthTalent: Boolean = false,
+    var potentialRating: Int = 80,
+    var notableAchievements: List<String> = emptyList()
 ) {
     val fullName: String get() = "$firstName $lastName"
 
@@ -374,7 +378,80 @@ data class Player(
                 weightKg = weightKg,
                 preferredFoot = preferredFoot,
                 specialty = specialty,
-                personality = personality
+                personality = personality,
+                potentialRating = random.nextInt(75, 92)
+            )
+        }
+
+        fun generateYouthTalent(country: String, position: Position? = null): Player {
+            val random = Random
+            val chosenPos = position ?: Position.values().random(random)
+            val youthAge = random.nextInt(16, 20)
+            
+            // High potential for young talents
+            val potential = random.nextInt(82, 96)
+            val baseRating = random.nextInt(62, 75)
+            
+            val attrs = when (chosenPos) {
+                Position.GK -> PlayerAttributes(
+                    attack = 20, defense = 30, midfield = 25, speed = 55, stamina = 60,
+                    goalkeeper = baseRating, mental = random.nextInt(55, 75), physical = random.nextInt(55, 75)
+                )
+                Position.DEF -> PlayerAttributes(
+                    attack = 35, defense = baseRating, midfield = 50, speed = random.nextInt(60, 80), stamina = random.nextInt(65, 85),
+                    goalkeeper = 15, mental = random.nextInt(55, 75), physical = random.nextInt(60, 82)
+                )
+                Position.MID -> PlayerAttributes(
+                    attack = random.nextInt(50, 72), defense = random.nextInt(45, 68), midfield = baseRating, speed = random.nextInt(62, 82), stamina = random.nextInt(65, 85),
+                    goalkeeper = 15, mental = random.nextInt(60, 80), physical = random.nextInt(50, 75)
+                )
+                Position.ATT -> PlayerAttributes(
+                    attack = baseRating, defense = 25, midfield = 50, speed = random.nextInt(68, 88), stamina = random.nextInt(60, 80),
+                    goalkeeper = 12, mental = random.nextInt(55, 75), physical = random.nextInt(55, 78)
+                )
+            }
+
+            val achievements = listOf(
+                "✨ Joya de Cantera Sub-18",
+                "🏆 Campeón de Torneo Juvenil",
+                "⚽ Goleador Destacado en Academia",
+                "💎 Ojeado por Clubes Continental"
+            ).shuffled().take(2)
+
+            val basePlayer = generateProcedural(country = country, pos = chosenPos)
+            return basePlayer.copy(
+                age = youthAge,
+                attributes = attrs,
+                isFreeAgent = true,
+                isYouthTalent = true,
+                potentialRating = potential,
+                marketValue = (baseRating * 12_000L),
+                salary = (random.nextInt(1200, 3500)).toLong(),
+                contractYears = 3,
+                notableAchievements = achievements,
+                scoutingLevel = 75
+            )
+        }
+
+        fun generateFreeAgent(position: Position? = null): Player {
+            val random = Random
+            val countries = listOf("Argentina", "Brasil", "Uruguay", "Colombia", "Chile", "México")
+            val chosenCountry = countries.random(random)
+            val chosenPos = position ?: Position.values().random(random)
+
+            val basePlayer = generateProcedural(country = chosenCountry, pos = chosenPos)
+            val achievements = listOf(
+                "🏆 Ganador de Copa Continental",
+                "⚽ 25 Goles en Liga Profesional",
+                "🌟 Elegido MVP de Temporada",
+                "🥇 Campeón de Primera División"
+            ).shuffled().take(2)
+
+            return basePlayer.copy(
+                isFreeAgent = true,
+                isYouthTalent = false,
+                notableAchievements = achievements,
+                scoutingLevel = 80
             )
         }
     }
